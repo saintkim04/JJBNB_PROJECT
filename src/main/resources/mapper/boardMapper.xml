@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ezen.dev.spring.board">
+
+	<insert id="board_insert" parameterType="boardVo">
+		insert into board_tbl (title,price,early_date,origin_filename1,origin_filename2,origin_filename3,origin_filename4,origin_filename5,origin_filename6,
+			origin_filename7,origin_filename8,origin_filename9,origin_filename10,
+			system_filename1,system_filename2,system_filename3,system_filename4,system_filename5,system_filename6,system_filename7,system_filename8,
+			system_filename9,system_filename10, m_idx , accommGrade, accommStar , deleteDate, accommGradeCheck, accommStarCheck,
+			accommPlace,accommPlace2,accommPlace3,accommPlace4,accommPlace5,accommPlace6, iconCheck, iconCheck2,commission,cleaningFee,
+			accommContent,accommContent2,accommContent3,convenience,convenience2,convenience3,convenience4,convenience5,convenience6,convenience7,convenience8,maxPeople) values(
+			#{title},#{price},#{early_date},
+			#{origin_filename1},#{origin_filename2},#{origin_filename3},#{origin_filename4},#{origin_filename5},#{origin_filename6},#{origin_filename7},
+			#{origin_filename8},#{origin_filename9},#{origin_filename10},
+			#{system_filename1},#{system_filename2},#{system_filename3},#{system_filename4},#{system_filename5},#{system_filename6},#{system_filename7},
+			#{system_filename8},#{system_filename9},#{system_filename10},#{m_idx},#{accommGrade},#{accommStar}, #{deleteDate}, #{accommGradeCheck}, #{accommStarCheck},
+			#{accommPlace},#{accommPlace2},#{accommPlace3},#{accommPlace4},#{accommPlace5},#{accommPlace6},#{iconCheck}, #{iconCheck2},
+			#{commission},#{cleaningFee},#{accommContent},#{accommContent2},#{accommContent3},#{convenience},#{convenience2},#{convenience3},#{convenience4},
+			#{convenience5},#{convenience6},#{convenience7},#{convenience8}, #{maxPeople})
+	</insert>
+
+	
+	<select id="read" resultType="boardVo">
+		select * from board_tbl where board_idx=#{board_idx}
+	</select>
+	
+	<select id="getBoardList" resultType="boardVo">
+		select * from board_tbl
+	</select>
+	
+	
+	<update id="update" parameterType="boardVo">
+		UPDATE board_tbl SET title=#{title},price=#{price},early_date=#{early_date},origin_filename1=#{origin_filename1},origin_filename2=#{origin_filename2},origin_filename3=#{origin_filename3},
+		origin_filename4=#{origin_filename4},origin_filename5=#{origin_filename5},origin_filename6=#{origin_filename6},origin_filename7=#{origin_filename7},origin_filename8=#{origin_filename8},
+		origin_filename9=#{origin_filename9},origin_filename10=#{origin_filename10},system_filename1=#{system_filename1},system_filename2=#{system_filename2},system_filename3=#{system_filename3},system_filename4=#{system_filename4},
+		system_filename5=#{system_filename5},system_filename6=#{system_filename6},system_filename7=#{system_filename7},system_filename8=#{system_filename8},system_filename9=#{system_filename9},system_filename10=#{system_filename10},
+		 m_idx =#{m_idx}, accommGrade=#{accommGrade}, accommStar =#{accommStar}, deleteDate=#{deleteDate}, accommGradeCheck=#{accommGradeCheck}, accommStarCheck=#{accommStarCheck},
+		accommPlace=#{accommPlace},accommPlace2=#{accommPlace2},accommPlace3=#{accommPlace3},accommPlace4=#{accommPlace4},accommPlace5=#{accommPlace5},accommPlace6=#{accommPlace6}, iconCheck=#{iconCheck},
+		 iconCheck2=#{iconCheck2},commission=#{commission},cleaningFee=#{cleaningFee},accommContent=#{accommContent},accommContent2=#{accommContent2},accommContent3=#{accommContent3},
+		 convenience=#{convenience},convenience2=#{convenience2},convenience3=#{convenience3},convenience4=#{convenience4},convenience5=#{convenience5},convenience6=#{convenience6},convenience7=#{convenience7},
+		 convenience8=#{convenience8} WHERE board_idx = #{board_idx} 
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from board_tbl where board_idx= #{board_idx}
+	</delete>
+	
+	  <select id="getBoardListPaging" resultType="boardVo" parameterType="criteria">
+        select * from(select * from board_tbl
+        <if test="keyword != null">
+                    where title like concat('%',#{keyword},'%' )
+        </if> ORDER by board_idx DESC) as T1 limit #{skip},#{amount}
+    </select>
+    
+    <!-- 예약 내역 추가 -->
+	<insert id="reservation_insert" parameterType="reservationVo">
+		insert into reservation_tbl (r_sdate,r_edate,r_cost,board_idx,m_idx,r_name,r_tell) values (#{r_sdate},#{r_edate},#{r_cost},#{board_idx},#{m_idx},#{r_name},#{r_tell})
+	</insert>
+	
+	<!-- 예약 내역 가져오기 -->
+	<select id="reservation_select" parameterType="reservationVo" resultType="reservationVo">
+		select * from reservation_tbl where r_sdate = #{r_sdate} and r_edate = #{r_edate} and board_idx = #{board_idx}
+	</select>
+	
+	<delete id="reservation_delete" parameterType="int">
+		delete from reservation_tbl where r_idx= #{r_idx}
+	</delete>
+	
+	<select id="pay_read" resultType="reservationVo">
+		select * from reservation_tbl where r_idx = #{r_idx}
+	</select>
+	
+	<select id="reservationAll_select" parameterType="boardVo" resultType="reservationVo">
+      select * from reservation_tbl where board_idx = #{board_idx}
+   </select>
+    
+    
+    <!-- 게시물 총 개수 -->
+    <select id="getTotal" resultType="int">
+    
+        select count(*) from board_tbl
+      	  	<if test="keyword != null">
+            where title like concat('%',#{keyword},'%')
+       		</if>
+    
+	</select>
+	
+	<!-- 리뷰 토탈 -->
+	<select id="getReTotal" resultType="int">
+		select count(*) from review_tbl where board_idx = #{board_idx}
+	</select>
+	
+	<!-- 리뷰 리스트 -->
+	<select id="getReviewList" resultType="reviewVo">
+		select * from (
+			select re_idx, re_writer, re_content, re_grade, re_image, re_wdate, m_idx, board_idx
+			from review_tbl where board_idx = #{board_idx} order by re_idx desc) as T1
+			
+			<!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+			limit #{skip}, #{amount}
+	</select>
+	
+	<select id="getReviewGrade" resultType="reviewVo">
+		select re_grade from review_tbl where board_idx=#{board_idx}
+	</select>
+	
+	<!-- 리뷰 등록 -->
+	<insert id="insertReview" parameterType="reviewVo">
+		insert into review_tbl( re_writer, re_content, re_grade, re_image, board_idx, m_idx) 
+				values (#{re_writer}, #{re_content}, #{re_grade}, '//image.goodchoice.kr/profile/ico/ico_23.png', #{board_idx}, #{m_idx})
+
+	</insert>
+	
+	<!-- 리뷰 삭제 -->
+	<delete id="deleteReview" parameterType="int">
+		delete from review_tbl
+						where re_idx = #{re_idx}
+	</delete>
+	
+	<select id="selectReservation" parameterType="reviewVo" resultType="int">
+		select count(*) from reservation_tbl where board_idx = #{board_idx}
+	</select>
+	
+	<update id="updateReview_grade" parameterType="boardVo">
+		update board_tbl set review_grade=#{review_grade} where board_idx=#{board_idx}
+	</update>
+</mapper>	

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+	
+<configuration>
+
+	<!-- VO객체에 대한 별칭 설정 -->
+	<typeAliases>
+		<typeAlias alias="memberVo" type="ezen.dev.spring.vo.MemberVo"/>
+		<typeAlias alias="fileVo" type="ezen.dev.spring.vo.FileVo"/>
+		<typeAlias alias="boardVo" type="ezen.dev.spring.vo.BoardVo"/>
+		<typeAlias alias="criteria" type="ezen.dev.spring.model.Criteria"/>
+		<typeAlias alias="noticeVo" type="ezen.dev.spring.vo.NoticeVo"/>
+		<typeAlias alias="inquiryVo" type="ezen.dev.spring.vo.InquiryVo"/>
+		<typeAlias alias="eventVo" type="ezen.dev.spring.vo.EventVo"/>
+		<typeAlias alias="reviewVo" type="ezen.dev.spring.vo.ReviewVo"/>
+		<typeAlias alias="reservationVo" type="ezen.dev.spring.vo.ReservationVo"/>
+	</typeAliases>
+
+</configuration>	

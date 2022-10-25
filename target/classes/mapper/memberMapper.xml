@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ezen.dev.spring.member">
+
+	<insert id="join" parameterType="memberVo">
+	<!-- parameterType: SQL문 실행을 위해 필요한 입력값에 대한 데이터형.
+	     memberVo는 mybatis-config.xml파일에 별칭으로 정의되어져 있기 때문에 사용 가능.
+	     SQL문에서 사용되는 #{속성/멤버변수}는 입력값에서 가져오는 것임 -->
+		insert into member_tbl(m_id,m_pw,m_nname,m_tell,m_email) values(#{m_id},#{m_pw},#{m_nname},#{m_tell},#{m_email})
+	
+	</insert>
+	
+	<select id="login" parameterType="memberVo" resultType="memberVo">
+		select * from member_tbl 
+			where m_id =#{m_id}
+			and m_delyn = 'N'
+	
+	</select>
+	
+	<select id="getMember" parameterType="string" resultType="memberVo">
+		select * from member_tbl where m_id = #{m_id}
+	</select>
+	
+	<update id="updateMember" parameterType="memberVo">
+		update member_tbl set m_nname = #{m_nname},
+							  m_nname = #{m_nname},
+							  m_tell = #{m_tell}
+				where m_id = #{m_id}
+	</update>
+	
+	<update id="updateNname" parameterType="memberVo">
+		update member_tbl set m_nname = #{m_nname}	where m_id = #{m_id}
+	</update>
+	
+	<update id="updateEmail" parameterType="memberVo">
+		update member_tbl set m_email = #{m_email}	where m_id = #{m_id}
+	</update>
+	
+	<update id="updateTell" parameterType="memberVo">
+		update member_tbl set m_tell = #{m_tell} where m_id = #{m_id}
+	</update>
+	
+	<update id="updatePw" parameterType="memberVo">
+		update member_tbl set m_pw = #{m_pw} where m_id = #{m_id}
+	</update>
+	
+	<select id="getMemberList" resultType="memberVo">
+		select * from member_tbl
+	</select>
+	
+		<update id="updateGrade" parameterType="map">
+		update member_tbl set m_grade = #{m_grade}
+			   where m_idx = #{m_idx}
+	</update>
+	
+	<delete id="deleteMember" parameterType="list">
+		delete from member_tbl where m_idx in 
+		<foreach collection="list" item="m_idx" open="(" separator="," close=")" >
+			#{m_idx}
+		</foreach>
+	</delete>
+	
+	<select id="getUpdateList" resultType="memberVo">
+		select * from member_tbl_bak where modify_type = '수정' 
+	</select>
+	
+	<select id="getDeleteList" resultType="memberVo">
+		select * from member_tbl_bak where modify_type = '삭제' 
+	</select>
+
+	<!-- 아이디 중복체크 -->
+	<select id="idChk" parameterType="memberVo" resultType="int">
+		select count(*) from member_tbl where m_id = #{m_id} 
+	</select>
+
+	<!-- 닉네임 중복체크 -->
+	<select id="nnameChk" parameterType="memberVo" resultType="int">
+		select count(*) from member_tbl where m_nname = #{m_nname}
+	</select>
+	
+	<!-- 비밀번호 확인 -->
+	<select id="pwChk" parameterType="memberVo" resultType="memberVo">
+		select * from member_tbl where m_id =#{m_id}
+	</select>
+	
+	<!-- 비밀번호 찾기 인증 -->
+	<select id="pwfind_process" parameterType="memberVo" resultType="int">
+		select count(*) from member_tbl where m_id = #{m_id} and m_email = #{m_email}
+	</select>
+	
+	<!-- 예약 내역 가져오기 -->
+	<select id="reservation_list" resultType="reservationVo">
+		select * from reservation_tbl a inner join board_tbl b on a.board_idx = b.board_idx where a.m_idx = #{m_idx}
+	</select>
+	
+</mapper>	

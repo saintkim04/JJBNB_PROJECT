@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ezen.dev.spring.inquiry">
+
+	<!-- resultType은 쿼리를 실행한 뒤 결과가 있을 경우에 사용하며,
+			반대로 데이터를 넣을때는 parameterType을 사용 -->
+			
+	<select id="getInquiry" resultType="inquiryVo">
+		select * from inquiry_tbl where i_idx = #{i_idx}
+	</select>		
+			
+	
+	<!-- 1:1문의 나의 문의 리스트 -->
+	<select id="getInquiryList" resultType="inquiryVo" parameterType="int">
+		<!-- select i_idx, i_title, i_content, i_wdate, i_inq_type, i_ryn, i_rdate, i_rcontent, m_idx from inquiry_tbl where m_idx = #{m_idx} order by i_idx desc  -->
+		
+			select i_idx, i_title, i_content, i_wdate, i_inq_type, i_ryn, i_rdate, i_rcontent, m_idx
+			from inquiry_tbl where m_idx = #{m_idx} order by i_idx desc
+			
+		<!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+		
+	</select>
+	
+	<insert id="writeInquiry" parameterType="inquiryVo">
+		insert into inquiry_tbl(i_title, i_content, i_inq_type, i_ryn, m_idx)
+							values (#{i_title}, #{i_content} , #{i_inq_type}, '답변 대기중', #{m_idx})
+	</insert>
+	
+	<select id="answerInquiry" resultType="inquiryVo" parameterType="int">
+		select * from inquiry_tbl a inner join member_tbl b on a.m_idx = b.m_idx where i_idx = #{i_idx}
+
+	</select>
+	
+	<select id="getAnsweredList" resultType="inquiryVo">
+		<!-- select i_idx, i_title, i_content, i_wdate, i_rcontent, i_rdate, i_ryn, i_inq_type from inquiry_tbl where i_ryn = '답변 대기중'  -->
+		
+		select * from (
+			select i_idx, i_title, i_content, i_wdate, i_rcontent, i_rdate, i_ryn, i_inq_type 
+			from inquiry_tbl where i_ryn = '답변 대기중' order by i_idx desc) as T1
+			
+		<!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+		limit #{skip},#{amount}
+	</select>
+	
+	<select id="getAnswerList" resultType="inquiryVo">
+		<!-- select i_idx, i_title, i_content, i_wdate, i_rcontent, i_rdate, i_ryn, i_inq_type from inquiry_tbl where i_ryn = '답변 완료' -->
+		
+		select * from (
+			select i_idx, i_title, i_content, i_wdate, i_rcontent, i_rdate, i_ryn, i_inq_type 
+			from inquiry_tbl where i_ryn = '답변 완료' order by i_idx desc) as T1
+			
+		<!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+		limit #{skip},#{amount}
+	</select>
+
+	<update id="writeAnswer" parameterType="inquiryVo">
+		update inquiry_tbl set i_rcontent = #{i_rcontent},
+							   i_rdate = current_timestamp(),
+							   i_ryn = '답변 완료'
+						where i_idx = #{i_idx}
+	</update>
+	
+	<!-- 문의 게시물 총 갯수 -->
+    <select id="getTotal" resultType="int">
+    
+        select count(*) from inquiry_tbl where m_idx = #{m_idx}
+    
+    </select>
+    
+    <!-- 답변 대기중 게시물 총 갯수 -->
+    <select id="getTotaling" resultType="int">
+    
+        select count(*) from inquiry_tbl where i_ryn = '답변 대기중'
+    
+    </select>
+    
+    <!-- 답변 완료 게시물 총 갯수 -->
+    <select id="getTotaled" resultType="int">
+    
+        select count(*) from inquiry_tbl where i_ryn = '답변 완료'
+    
+    </select>
+	
+</mapper>
+	

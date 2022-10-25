@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- 프로젝트 폴더의 환경설정 파일인 root-context.xml에 대한 설정. 이 파일에서는 주로 View와
+	     관련 없는 설정들이 정의됨. (예) 데이터베이스에 대한 설정  -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	
+	<!-- 이 객체는 web.xml에 정의된 프로젝트 환경 설정파일들을 읽어서 파일에 정의된 빈을 로딩함으로써
+	     웹 프로그램을 초기화함 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- Spring MVC에서 Front Controller의 역할을 하며 요청 처리를 위한 알고리즘을 제공함. 
+	     Spring 설정정보를 통해 요청 매핑, 뷰 결정, 예외 처리 등을 처리할 대리자들을 찾고 실제적인 
+	     요청처리는 대리자에 의해 처리됨  -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+			/WEB-INF/spring/appServlet/servlet-context.xml
+			/WEB-INF/spring/spring-security.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+		
+		<multipart-config>
+		    <max-file-size>10485760</max-file-size> <!-- 파일 한 개의 최대 크기: 10MB -->
+		    <max-request-size>52428800</max-request-size> <!-- 한 번에 여러 파일 올릴 때 총 크기: 50MB -->
+		    <file-size-threshold>20971520</file-size-threshold> <!-- 넘으면 temp에 넣고 업로드에 들어가지 않는다 : 20mb -->
+	  	</multipart-config>
+		
+		
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern> <!-- /:모든 요청 -->
+	</servlet-mapping>
+	
+	<!-- 한글 처리 코드 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	
+	<!-- XSS 처리 -->
+	<filter>
+		<filter-name>XSS</filter-name>
+	    <filter-class>ezen.dev.spring.filter.CrossScriptingFilter</filter-class> // 자신의 CrossScriptingFilter 적용 위치
+	</filter>
+	<filter-mapping>
+	    <filter-name>XSS</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+</web-app>

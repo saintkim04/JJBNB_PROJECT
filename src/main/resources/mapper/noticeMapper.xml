@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ezen.dev.spring.notice">
+
+	<!-- resultType은 쿼리를 실행한 뒤 결과가 있을 경우에 사용하며,
+			반대로 데이터를 넣을때는 parameterType을 사용 -->
+	
+	<select id="getNotice" resultType="noticeVo">
+		select * from notice_tbl where n_idx = #{n_idx}
+	</select>
+	
+	<insert id="writeNotice" parameterType="noticeVo">
+		insert into notice_tbl(n_title, n_content, m_idx) values (#{n_title}, #{n_content}, ${m_idx})
+	</insert>
+	
+	<!-- 게시물 목록(페이징) -->
+	<select id="getNoticeList" resultType="noticeVo">
+		select * from (
+			select n_idx, n_title, n_content, n_date  
+			from notice_tbl order by n_idx desc) as T1
+			
+		<!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+		limit #{skip},#{amount}
+	</select>
+	
+	<update id="modifyNotice" parameterType="noticeVo">
+		update notice_tbl set n_title = #{n_title},
+							  n_content = #{n_content}
+						where n_idx = #{n_idx}
+	</update>
+	
+	<delete id="deleteNotice" parameterType="int">
+		delete from notice_tbl 
+						where n_idx = #{n_idx}
+	</delete>
+
+
+	<!-- 게시물 총 개숫 -->
+    <select id="getTotal" resultType="int">
+    
+        select count(*) from notice_tbl
+    
+    </select>
+
+</mapper>	

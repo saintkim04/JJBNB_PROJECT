@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ezen.dev.spring.event">
+
+	<!-- resultType은 쿼리를 실행한 뒤 결과가 있을 경우에 사용하며,
+			반대로 데이터를 넣을때는 parameterType을 사용 -->
+			
+	
+	<select id="getEvent" resultType="eventVo">
+		select * from event_tbl where e_idx = #{e_idx}
+	</select>	
+	
+	
+	<update id="modifyEvent" parameterType="eventVo">
+		update event_tbl set e_title = #{e_title},
+							 e_sdate = #{e_sdate},
+							 e_edate = #{e_edate},
+							 origin_filename1 = #{origin_filename1},
+							 origin_filename2 = #{origin_filename2},
+							 origin_filename3 = #{origin_filename3},
+							 system_filename1 = #{system_filename1},
+							 system_filename2 = #{system_filename2},
+							 system_filename3 = #{system_filename3},
+							 m_idx = #{m_idx}
+							 
+						where e_idx = #{e_idx}
+	</update>	
+			
+			
+	<insert id="eventWrite" parameterType="eventVo">
+		insert into event_tbl (e_title, e_sdate, e_edate,
+		origin_filename1, origin_filename2, origin_filename3,
+		system_filename1, system_filename2, system_filename3, m_idx) 
+		values(
+			#{e_title}, #{e_sdate}, #{e_edate},
+			#{origin_filename1},#{origin_filename2},#{origin_filename3}, 
+			#{system_filename1},#{system_filename2},#{system_filename3}, #{m_idx}
+			)
+	
+	</insert>
+	
+	<!-- 게시물 목록(페이징) -->
+	<select id="getEventList" resultType="eventVo">
+		select * from (
+			select *
+			from event_tbl order by e_idx desc) as T1
+			
+			<!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+			limit #{skip}, #{amount}
+	</select>
+	
+	<select id="eventView" resultType="eventVo" parameterType="int">
+		select * from event_tbl
+						where e_idx = #{e_idx}
+	</select>
+	
+	<delete id="deleteEvent" parameterType="int">
+		delete from event_tbl
+						where e_idx = #{e_idx}
+	</delete>
+	
+	<!-- 게시물 총 개숫 -->
+    <select id="getTotal" resultType="int">
+    
+        select count(*) from event_tbl
+    
+    </select>
+
+</mapper>
